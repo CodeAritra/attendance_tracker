@@ -66,7 +66,6 @@ export const AttendanceProvider = ({ children }) => {
     try {
       const res = await axios.get(
         "http://localhost:5000/api/attendance",
-
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token
         }
