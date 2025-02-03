@@ -58,7 +58,7 @@ export default function Layout({ children }) {
           <span className="text-xs">Home</span>
         </Link>
         <Link
-          to="/attendance"
+          to="/routine"
           className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
         >
           <BookOpen className="w-6 h-6" />

@@ -12,6 +12,11 @@ export default function Dashboard() {
     fetchTodaySubjects();
   }, []);
 
+  //  useEffect(() => {
+  //    console.log(todaySubjects.length);
+  //    ;
+  //  }, [todaySubjects]);
+
   return (
     <Navigation>
       <div className="bg-gray-50">
@@ -32,7 +37,7 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   {todaySubjects.map((subject) => (
                     <div
-                      key={subject._id}
+                      key={subject.name}
                       className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200"
                     >
                       <div>
@@ -46,7 +51,7 @@ export default function Dashboard() {
                       </div>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => markAttendance(subject._id, true)}
+                          onClick={() => markAttendance(subject.name, true)}
                           className={`p-2 rounded-full transition duration-200 ${
                             subject.attendance === true
                               ? "bg-green-100 text-green-600"
@@ -57,7 +62,7 @@ export default function Dashboard() {
                           <CheckCircle className="w-6 h-6" />
                         </button>
                         <button
-                          onClick={() => markAttendance(subject._id, false)}
+                          onClick={() => markAttendance(subject.name, false)}
                           className={`p-2 rounded-full transition duration-200 ${
                             subject.attendance === false
                               ? "bg-red-100 text-red-600"

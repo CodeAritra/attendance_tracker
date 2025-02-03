@@ -33,14 +33,12 @@ export const AttendanceProvider = ({ children }) => {
     }
   };
 
-  const markAttendance = async (subjectId, status) => {
-    // console.log("date == ", format(new Date(), "dd/MM/yyyy"));
-
+  const markAttendance = async (subjectname, status) => {
     try {
-      await axios.post(
+       await axios.post(
         "http://localhost:5000/api/attendance",
         {
-          subjectId,
+          subjectname,
           status,
           date: format(new Date(), "dd/MM/yyyy"),
         },
@@ -48,11 +46,14 @@ export const AttendanceProvider = ({ children }) => {
           headers: { Authorization: `Bearer ${token}` }, // Send the token
         }
       );
-
+  
+      // console.log("Attendance updated:", data);
+  
+      // Update the state correctly
       setTodaySubjects((prev) =>
         prev.map((subject) =>
-          subject._id === subjectId
-            ? { ...subject, attendance: status ? true : false }
+          subject.name === subjectname
+            ? { ...subject, attendance: status }
             : subject
         )
       );
@@ -61,16 +62,14 @@ export const AttendanceProvider = ({ children }) => {
       setError("Failed to mark attendance. Please try again.");
     }
   };
+  
 
   const countAttendance = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/attendance",
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Send the token
-        }
-      );
-      console.log("data == ", res.data);
+      const res = await axios.get("http://localhost:5000/api/attendance", {
+        headers: { Authorization: `Bearer ${token}` }, // Send the token
+      });
+      // console.log("data == ", res.data);
       setSubjects(res.data);
     } catch (error) {
       console.log("error : ", error);

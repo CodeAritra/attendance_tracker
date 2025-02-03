@@ -48,20 +48,12 @@ export default function ProgressPage() {
                             <div
                               className="bg-blue-600 h-2.5 rounded-full"
                               style={{
-                                width: `${
-                                  (subject.attendedClasses /
-                                    subject.totalClasses) *
-                                  100
-                                }%`,
+                                width: `${subject.attendancePercentage}%`,
                               }}
                             ></div>
                           </div>
                           <p className="text-sm text-gray-600 mt-1">
-                            {(
-                              (subject.attendedClasses / subject.totalClasses) *
-                              100
-                            ).toFixed(2)}
-                            % Attendance
+                            {subject.attendancePercentage}% Attendance
                           </p>
                         </div>
                       </motion.div>

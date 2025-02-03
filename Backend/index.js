@@ -51,6 +51,7 @@ const routineSchema = new mongoose.Schema({
 const attendanceSchema = new mongoose.Schema({
   userId: mongoose.Schema.Types.ObjectId,
   subjectId: mongoose.Schema.Types.ObjectId,
+  subjectname:String,
   date: String,
   status: Boolean,
 });
@@ -163,64 +164,78 @@ app.post("/api/routine", authenticateToken, async (req, res) => {
   }
 });
 
+//get routine
+app.get("/api/routine", authenticateToken, async (req, res) => {
+  try {
+    const routine = await Routine.find({ userId: req.user.id });
+
+    if (!routine || routine.length === 0) {
+      return res.status(404).json({ message: "No routine found" });
+    }
+
+    res.json(routine);
+  } catch (error) {
+    console.error("Error fetching routine:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Get Today's Subjects (Auth required)
 app.get("/api/today-subjects", authenticateToken, async (req, res) => {
   try {
-    const today = format(new Date(), "EEEE"); // Get today's day (e.g., "Monday")
-    const formattedDate = format(new Date(), "dd/MM/yyyy"); // Format date
+    // Get today's day name (e.g., "Monday")
+    const today = format(new Date(), "EEEE");
 
-    console.log("Date =", formattedDate, "Day =", today);
-
-    // Fetch routine for today
+    // Find today's subjects from the Routine collection
     const routine = await Routine.findOne({ userId: req.user.id, day: today });
 
-    if (!routine) {
-      return res.json({ message: "No subjects found for today." });
+    if (!routine || routine.subjects.length === 0) {
+      return res.json([]); // No subjects for today
     }
 
-    // Fetch today's attendance records
+    // Extract subject names from the routine
+    const subjectNames = routine.subjects.map((subject) => subject.name);
+
+    // Get today's attendance records based on subjectName
     const attendanceRecords = await Attendance.find({
       userId: req.user.id,
-       date: format(new Date(), "dd/MM/yyyy"),
+      date: format(new Date(), "dd/MM/yyyy"),
+      subjectname: { $in: subjectNames }, // Match subjects by name
     });
-    // res.json(attendanceRecords);
 
-
-    // Map subjects with attendance status (if found)
+    // Map subjects with attendance data
     const subjectsWithAttendance = routine.subjects.map((subject) => {
       const attendance = attendanceRecords.find(
-        (a) => a.subjectId.toString() === subject._id.toString()
+        (record) => record.subjectname === subject.name
       );
 
       return {
-        _id: subject._id,
         name: subject.name,
         time: subject.time,
-        attendance: attendance ? attendance.status : undefined, 
+        attendance: attendance ? attendance.status : null, 
       };
     });
 
-     res.json(subjectsWithAttendance);
+    res.json(subjectsWithAttendance);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-
 // Mark Attendance (Auth required)
 app.post("/api/attendance", authenticateToken, async (req, res) => {
   try {
-    let { subjectId, status, date } = req.body;
+    let { subjectname, status, date } = req.body;
 
-    if (!subjectId) {
+    if (!subjectname) {
       return res.status(400).json({ error: "Error in marking attendance" });
     }
 
     // Check if subject exists in the user's routine
     const routine = await Routine.findOne({
       userId: req.user.id,
-      "subjects._id": subjectId,
-    });
+      "subjects.name": subjectname,
+    }); 
 
     if (!routine) {
       return res
@@ -230,7 +245,7 @@ app.post("/api/attendance", authenticateToken, async (req, res) => {
 
     // Mark attendance
     const attendance = await Attendance.findOneAndUpdate(
-      { userId: req.user.id, subjectId, date },
+      { userId: req.user.id, subjectname, date },
       { $set: { status } }, // Only update status
       { upsert: true, new: true }
     );
@@ -244,53 +259,60 @@ app.post("/api/attendance", authenticateToken, async (req, res) => {
 //get attendance of each subject
 app.get("/api/attendance", authenticateToken, async (req, res) => {
   try {
-    // Fetch distinct subjects for the user
-    const subjects = await Routine.aggregate([
-      { $match: { userId: req.user.id } },
-      { $unwind: "$subjects" },  // Unwind the subjects array
-      { $group: { _id: "$subjects.name", subjectName: { $first: "$subjects.name" } } } // Group by subject name
-    ]);
-    res.json(subjects);
+    // Fetch all routines for the user
+    const routines = await Routine.find({ userId: req.user.id });
 
+    // Extract unique subjects (use subject name for matching)
+    const subjectMap = new Map();
 
-    // Calculate attendance for each subject
-    const attendanceData = await Promise.all(
-      subjects.map(async (subject) => {
-        // Find attendance records for this subject based on subject name
-        const attendanceRecords = await Attendance.find({
-          userId: req.user.id,
-          subjectName: subject._id,  // Match based on subject name
-        });
+    routines.forEach((routine) => {
+      routine.subjects.forEach((subject) => {
+        if (!subjectMap.has(subject.name)) {
+          subjectMap.set(subject.name, {
+            name: subject.name,
+            total: 0,
+            attended: 0,
+          });
+        }
+      });
+    });
 
-        // Count distinct dates this subject was scheduled (unique dates)
-        const totalClasses = [...new Set(attendanceRecords.map((record) => record.date))].length;
+    if (subjectMap.size === 0) {
+      return res.json([]); // No subjects found
+    }
 
-        // Count attended classes where status is "Present"
-        const attendedClasses = attendanceRecords.filter(
-          (record) => record.status === "Present"
-        ).length;
+    // Fetch all attendance records for the user
+    const attendanceRecords = await Attendance.find({ userId: req.user.id });
+    // res.json({routine:routines, attendanceData: attendanceRecords, subjectMap: subjectMap });
 
-        // Calculate attendance percentage
-        const attendancePercentage = totalClasses
-          ? ((attendedClasses / totalClasses) * 100).toFixed(2)
-          : "0.00";
+    // Map attendance to subjects
+    attendanceRecords.forEach((record) => {
+      const subjectEntry = subjectMap.get(record.subjectname);
+    console.log(record);
 
-        return {
-          subjectName: subject.subjectName,
-          totalClasses,
-          attendedClasses,
-          attendancePercentage,
-        };
-      })
-    );
+      if (subjectEntry) {
+        subjectEntry.total += 1;
+        if (record.status === true) {
+          subjectEntry.attended += 1;
+        }
+      }
+    });
 
-    // Send the computed attendance data
-    // res.json(attendanceData);
+    // Convert map to array
+    const attendanceData = Array.from(subjectMap.values()).map((subject) => ({
+      subjectName: subject.name,
+      totalClasses: subject.total,
+      attendedClasses: subject.attended,
+      attendancePercentage: subject.total
+        ? ((subject.attended / subject.total) * 100).toFixed(2)
+        : "0.00",
+    }));
+
+     res.json(attendanceData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 const PORT = 5000;
 app.listen(PORT, () => {
