@@ -15,6 +15,20 @@ export const AttendanceProvider = ({ children }) => {
 
   const token = localStorage.getItem("token");
 
+  const fetchRoutine = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:5000/api/routine", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      setRoutine(data);
+      setError("");
+    } catch (error) {
+      console.error("Error fetching routine:", error);
+      setError("Failed to load routine. Please refresh.");
+    }
+  };
+
   const fetchTodaySubjects = async () => {
     try {
       const response = await axios.get(
@@ -63,7 +77,6 @@ export const AttendanceProvider = ({ children }) => {
     }
   };
   
-
   const countAttendance = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/attendance", {
@@ -78,7 +91,7 @@ export const AttendanceProvider = ({ children }) => {
 
   return (
     <AttendanceContext.Provider
-      value={{
+      value={{fetchRoutine,
         subjects,
         setSubjects,
         countAttendance,

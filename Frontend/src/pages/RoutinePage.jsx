@@ -1,29 +1,14 @@
-import { useEffect,  useState } from "react";
+import { useContext, useEffect } from "react";
 import { CalendarDays, Clock } from "lucide-react";
 import Navigation from "../component/Navigation";
-import axios from "axios";
+import AttendanceContext from "../context/AttendancePRovider";
 
 export default function RoutinePage() {
-  const [routine, setRoutine] = useState([]);
-  const [error, setError] = useState("");
+  const { fetchRoutine, routine, error } = useContext(AttendanceContext);
 
   useEffect(() => {
     fetchRoutine();
   }, []);
-
-  const fetchRoutine = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:5000/api/routine", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-
-      setRoutine(data);
-      setError("");
-    } catch (error) {
-      console.error("Error fetching routine:", error);
-      setError("Failed to load routine. Please refresh.");
-    }
-  };
 
   return (
     <Navigation>
