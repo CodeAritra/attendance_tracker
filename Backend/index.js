@@ -288,7 +288,7 @@ app.get("/api/attendance", authenticateToken, async (req, res) => {
     // Map attendance to subjects
     attendanceRecords.forEach((record) => {
       const subjectEntry = subjectMap.get(record.subjectname);
-    console.log(record);
+    // console.log(record);
 
       if (subjectEntry) {
         subjectEntry.total += 1;
