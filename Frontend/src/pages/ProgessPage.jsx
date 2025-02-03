@@ -16,7 +16,12 @@ export default function ProgressPage() {
       <Navigation>
         <div className="bg-gray-50  ">
           <div className="max-w-4xl mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-lg p-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg shadow-lg p-4"
+            >
               {/* Attendance Header */}
               <div className="mb-4 ml-1">
                 <h2 className="text-xl font-semibold flex items-center">
@@ -63,7 +68,7 @@ export default function ProgressPage() {
               ) : (
                 <></>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </Navigation>

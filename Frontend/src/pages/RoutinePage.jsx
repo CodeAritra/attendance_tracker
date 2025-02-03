@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { CalendarDays, Clock } from "lucide-react";
 import Navigation from "../component/Navigation";
 import AttendanceContext from "../context/AttendancePRovider";
+import { motion } from "framer-motion";
 
 export default function RoutinePage() {
   const { fetchRoutine, routine, error } = useContext(AttendanceContext);
@@ -14,7 +15,12 @@ export default function RoutinePage() {
     <Navigation>
       <div className="bg-gray-50 min-h-screen p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-lg shadow-lg p-6 mb-8"
+          >
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
               <CalendarDays className="w-6 h-6 mr-2 text-indigo-600" />
               My Weekly Routine
@@ -53,7 +59,7 @@ export default function RoutinePage() {
                 </div>
               ))
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </Navigation>

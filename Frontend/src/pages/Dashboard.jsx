@@ -1,7 +1,7 @@
 import { useEffect, useContext } from "react";
+import { motion } from "framer-motion";
 import { Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
-import Navigation from "../component//Navigation";
-
+import Navigation from "../component/Navigation";
 import AttendanceContext from "../context/AttendanceContext.js";
 
 export default function Dashboard() {
@@ -12,33 +12,57 @@ export default function Dashboard() {
     fetchTodaySubjects();
   }, []);
 
-  //  useEffect(() => {
-  //    console.log(todaySubjects.length);
-  //    ;
-  //  }, [todaySubjects]);
-
   return (
     <Navigation>
-      <div className="bg-gray-50">
-        <div className="max-w-4xl  mx-auto p-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div className="bg-gray-50 min-h-screen flex justify-center">
+        <div
+          className="max-w-4xl w-full mx-auto p-6"
+        >
+          <div
+            className="bg-white rounded-lg shadow-lg p-6 mb-8"
+          >
             {/* Today's Subjects */}
-            <div className="  bg-white rounded-lg">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="bg-white rounded-lg"
+            >
               <h2 className="text-xl font-semibold mb-4 flex items-center">
                 <Calendar className="w-5 h-5 mr-2 text-indigo-600" />
                 Classes for today
               </h2>
 
               {todaySubjects.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center py-8 text-gray-500"
+                >
                   No classes scheduled for today
-                </div>
+                </motion.div>
               ) : (
-                <div className="space-y-4">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { staggerChildren: 0.1 },
+                    },
+                  }}
+                  className="space-y-4"
+                >
                   {todaySubjects.map((subject) => (
-                    <div
+                    <motion.div
                       key={subject.name}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-200"
                     >
                       <div>
                         <h3 className="font-medium text-gray-800">
@@ -73,11 +97,11 @@ export default function Dashboard() {
                           <XCircle className="w-6 h-6" />
                         </button>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
