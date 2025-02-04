@@ -58,7 +58,6 @@ export const AttendanceProvider = ({ children }) => {
 
       console.log("Routine :", extractedSubjects);
 
-
       // Send routine data to backend
       const response = await axios.post(
         "http://localhost:5000/api/routine",
@@ -85,6 +84,7 @@ export const AttendanceProvider = ({ children }) => {
       const { data } = await axios.get("http://localhost:5000/api/routine", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log("Routine = ", data);
 
       setRoutine(data);
       setError("");

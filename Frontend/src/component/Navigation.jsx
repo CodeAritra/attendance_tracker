@@ -27,7 +27,7 @@ export default function Nvaigation({ children }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="max-h-screen flex flex-col">
       {/* Navbar */}
       <motion.nav
         initial={{ y: -50, opacity: 0 }}

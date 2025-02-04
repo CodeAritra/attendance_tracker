@@ -14,13 +14,9 @@ export default function Dashboard() {
 
   return (
     <Navigation>
-      <div className="bg-gray-50 min-h-screen flex justify-center">
-        <div
-          className="max-w-4xl w-full mx-auto p-6"
-        >
-          <div
-            className="bg-white rounded-lg shadow-lg p-6 mb-8"
-          >
+      <div className="bg-gray-50 max-h-screen flex justify-center overflow-hidden">
+        <div className="max-w-4xl w-full mx-auto p-6">
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             {/* Today's Subjects */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}

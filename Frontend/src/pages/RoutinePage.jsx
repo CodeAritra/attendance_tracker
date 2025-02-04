@@ -5,7 +5,7 @@ import AttendanceContext from "../context/AttendancePRovider";
 import { motion } from "framer-motion";
 
 export default function RoutinePage() {
-  const { fetchRoutine, routine, error } = useContext(AttendanceContext);
+  const { fetchRoutine, routine } = useContext(AttendanceContext);
 
   useEffect(() => {
     fetchRoutine();
@@ -13,7 +13,7 @@ export default function RoutinePage() {
 
   return (
     <Navigation>
-      <div className="bg-gray-50 min-h-screen p-6">
+      <div className="bg-gray-50 max-h-screen p-6">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -26,7 +26,7 @@ export default function RoutinePage() {
               My Weekly Routine
             </h2>
 
-            {error && <div className="text-red-500 mb-4">{error}</div>}
+            {/* {error && <div className="text-red-500 mb-4">{error}</div>} */}
 
             {routine.length === 0 ? (
               <p className="text-gray-500 text-center py-8">

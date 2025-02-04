@@ -14,7 +14,7 @@ export default function ProgressPage() {
   return (
     <>
       <Navigation>
-        <div className="bg-gray-50  ">
+        <div className="bg-gray-50  max-h-screen">
           <div className="max-w-4xl mx-auto p-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -31,7 +31,13 @@ export default function ProgressPage() {
               </div>
 
               {/* Attendance Cards */}
-              {subjects ? (
+              {subjects.length === 0 ? (
+                <>
+                  <p className="text-gray-500 text-center py-8">
+                    No routine uploaded yet.
+                  </p>
+                </>
+              ) : (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {subjects.map((subject) => (
@@ -65,8 +71,6 @@ export default function ProgressPage() {
                     ))}
                   </div>
                 </>
-              ) : (
-                <></>
               )}
             </motion.div>
           </div>
