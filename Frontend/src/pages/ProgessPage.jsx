@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navigation from "../component/Navigation";
 import { Calendar } from "lucide-react";
-import AttendanceContext from "../context/AttendancePRovider";
+import AttendanceContext from "../context/AttendanceContext.js";
 
 export default function ProgressPage() {
   const { subjects, countAttendance } = useContext(AttendanceContext);

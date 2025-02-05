@@ -1,6 +1,6 @@
 import { Upload } from "lucide-react";
 import { useContext } from "react";
-import AttendanceContext from "../context/AttendancePRovider";
+import AttendanceContext from "../context/AttendanceContext.js";
 import Navigation from "../component/Navigation";
 
 export default function UploadPage() {

@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { CalendarDays, Clock } from "lucide-react";
 import Navigation from "../component/Navigation";
-import AttendanceContext from "../context/AttendancePRovider";
+import AttendanceContext from "../context/AttendanceContext.js";
 import { motion } from "framer-motion";
 
 export default function RoutinePage() {
