@@ -14,7 +14,9 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose
-  .connect("mongodb://localhost:27017/Attendance")
+  .connect(
+    "mongodb+srv://aritradhank21:qwertyuio@cluster0.aokde86.mongodb.net/attendnaceTracker?retryWrites=true&w=majority&appName=Cluster0"
+  )
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -86,13 +88,23 @@ app.post("/api/register", async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
-      return res.status(400).json({ message: "Email already exists" });
+      return res.json({ success: false, message: "Email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashedPassword });
 
+    const token = jwt.sign(
+      { id: newUser._id },
+      process.env.JWT_SECRET || "arotra21205"
+    );
+
     await newUser.save();
-    res.json({ message: "User registered successfully" });
+    res.json({
+      token,
+      success: true,
+      user: { id: newUser._id, name: newUser.name, email: newUser.email },
+      message: "User registered successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -105,22 +117,25 @@ app.post("/api/login", async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user)
-      return res.status(400).json({ error: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ error: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid email or password" });
 
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET || "arotra21205",
-      {
-        expiresIn: "7d",
-      }
+      process.env.JWT_SECRET || "arotra21205"
     );
 
     res.json({
+      success: true,
       token,
+      message: "Login successfully",
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
@@ -170,7 +185,9 @@ app.post("/api/routine", authenticateToken, async (req, res) => {
     // Ensure user is authenticated
     const userId = req.user.id;
     if (!day || !subjects) {
-      return res.status(400).json({ error: "Day and subjects are required." });
+      return res
+        .status(400)
+        .json({ success: false, error: "Day and subjects are required." });
     }
 
     // Find existing routine for the user and day
@@ -183,20 +200,30 @@ app.post("/api/routine", authenticateToken, async (req, res) => {
       // Remove duplicate subjects (based on name and time)
       const uniqueSubjects = updatedSubjects.filter(
         (subject, index, self) =>
-          index === self.findIndex((s) => s.name === subject.name && s.time === subject.time)
+          index ===
+          self.findIndex(
+            (s) => s.name === subject.name && s.time === subject.time
+          )
       );
 
       // Update routine with merged subjects
       existingRoutine.subjects = uniqueSubjects;
       await existingRoutine.save();
-      return res.status(200).json({ message: "Routine updated successfully!", routine: existingRoutine });
+      return res.status(200).json({
+        success: true,
+        message: "Routine updated successfully!",
+        routine: existingRoutine,
+      });
     }
 
     // Create a new routine if not found
     const newRoutine = new Routine({ userId, day, subjects });
     await newRoutine.save();
-    return res.status(201).json({ message: "Routine added successfully!", routine: newRoutine });
-
+    return res.status(201).json({
+      success: true,
+      message: "Routine added successfully!",
+      routine: newRoutine,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

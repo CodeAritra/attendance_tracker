@@ -36,13 +36,17 @@ export default function AuthPage() {
           ? "http://localhost:5000/api/login"
           : "http://localhost:5000/api/register";
         const response = await axios.post(url, formData);
+        console.log("res = ", response.data.token);
 
-        if (isLogin) localStorage.setItem("token", response.data.token);
-
-        setMessage(response.data.message);
-        navigate("/");
+        
+        if (response.data.success) {
+          alert(response.data.message);
+          localStorage.setItem("token", response.data.token);
+          setMessage(response.data.message);
+          navigate("/");
+        }
       } catch (error) {
-        setMessage(error.response?.data?.error || "Something went wrong");
+        setMessage(error.response?.data?.error);
       }
     }
   };
