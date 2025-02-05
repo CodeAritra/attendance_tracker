@@ -7,10 +7,9 @@ import { useNavigate } from "react-router-dom";
 const RoutineUploader = () => {
   const [day, setDay] = useState("");
   const [subjects, setSubjects] = useState([{ name: "", time: "" }]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-
 
   const handleSubjectChange = (index, field, value) => {
     const updatedSubjects = [...subjects];
@@ -28,16 +27,20 @@ const RoutineUploader = () => {
 
   const handleSubmitRoutine = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/routine", {
-        day,
-        subjects,
-      },{
-        headers: { Authorization: `Bearer ${token}` }, // Send the token
-      });
+      const response = await axios.post(
+        "https://attendance-tracker-backend-5lm1.onrender.com/api/routine",
+        {
+          day,
+          subjects,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Send the token
+        }
+      );
       console.log("routine uploader = ", response.data);
 
-    //   alert(response.data.message);
-    navigate("/")
+      //   alert(response.data.message);
+      navigate("/");
       setDay("");
       setSubjects([{ name: "", time: "" }]);
     } catch (error) {

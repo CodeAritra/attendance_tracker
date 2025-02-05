@@ -33,12 +33,11 @@ export default function AuthPage() {
     if (validate()) {
       try {
         const url = isLogin
-          ? "http://localhost:5000/api/login"
-          : "http://localhost:5000/api/register";
+          ? "https://attendance-tracker-backend-5lm1.onrender.com/api/login"
+          : "https://attendance-tracker-backend-5lm1.onrender.com/api/register";
         const response = await axios.post(url, formData);
         console.log("res = ", response.data.token);
 
-        
         if (response.data.success) {
           alert(response.data.message);
           localStorage.setItem("token", response.data.token);
