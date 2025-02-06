@@ -83,7 +83,7 @@ export const AttendanceProvider = ({ children }) => {
 
   const fetchRoutine = async () => {
     try {
-      const { data } = await axios.get(`${URL}/api/routine`, {
+      const { data } = await axios.get(`${URL}/api/routine/get`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Routine = ", data);
@@ -97,9 +97,9 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const fetchTodaySubjects = async () => {
-    try {
+    try {      
       const response = await axios.get(
-        `${URL}/api/today-subjects`,
+        `${URL}/api/routine/today-subjects`,
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token
         }
@@ -117,7 +117,7 @@ export const AttendanceProvider = ({ children }) => {
   const markAttendance = async (subjectname, status) => {
     try {
       await axios.post(
-        `${URL}/api/attendance`,
+        `${URL}/api/attendance/mark`,
         {
           subjectname,
           status,
@@ -146,7 +146,7 @@ export const AttendanceProvider = ({ children }) => {
 
   const countAttendance = async () => {
     try {
-      const res = await axios.get(`${URL}/api/attendance`, {
+      const res = await axios.get(`${URL}/api/attendance/get`, {
         headers: { Authorization: `Bearer ${token}` }, // Send the token
       });
       // console.log("data == ", res.data);

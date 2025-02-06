@@ -36,8 +36,8 @@ export default function AuthPage() {
     if (validate()) {
       try {
         const url = isLogin
-          ? `${URL}/api/login`
-          : `${URL}/api/register`;
+          ? `${URL}/api/auth/login`
+          : `${URL}/api/auth/register`;
         const response = await axios.post(url, formData);
         console.log("res = ", response.data.token);
 

@@ -30,7 +30,7 @@ const RoutineUploader = () => {
   const handleSubmitRoutine = async () => {
     try {
       const response = await axios.post(
-        `${URL}/api/routine`,
+        `${URL}/api/routine/add`,
         {
           day,
           subjects,
