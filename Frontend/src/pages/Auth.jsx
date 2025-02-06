@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Lock, User, Mail } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { URL } from "../url/url";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,11 +31,13 @@ export default function AuthPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("URL = ",URL);
+    
     if (validate()) {
       try {
         const url = isLogin
-          ? "https://attendance-tracker-backend-5lm1.onrender.com/api/login"
-          : "https://attendance-tracker-backend-5lm1.onrender.com/api/register";
+          ? `${URL}/api/login`
+          : `${URL}/api/register`;
         const response = await axios.post(url, formData);
         console.log("res = ", response.data.token);
 

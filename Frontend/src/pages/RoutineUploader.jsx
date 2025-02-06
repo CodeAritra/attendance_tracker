@@ -3,6 +3,8 @@ import Navigation from "../component/Navigation";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { URL } from "../url/url";
+
 
 const RoutineUploader = () => {
   const [day, setDay] = useState("");
@@ -28,7 +30,7 @@ const RoutineUploader = () => {
   const handleSubmitRoutine = async () => {
     try {
       const response = await axios.post(
-        "https://attendance-tracker-backend-5lm1.onrender.com/api/routine",
+        `${URL}/api/routine`,
         {
           day,
           subjects,

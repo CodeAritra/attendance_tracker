@@ -5,6 +5,8 @@ import Tesseract from "tesseract.js";
 import AttendanceContext from "./AttendanceContext.js";
 import axios from "axios";
 import { format } from "date-fns";
+import { URL } from "../url/url";
+
 
 export const AttendanceProvider = ({ children }) => {
   const [routine, setRoutine] = useState([]);
@@ -81,7 +83,7 @@ export const AttendanceProvider = ({ children }) => {
 
   const fetchRoutine = async () => {
     try {
-      const { data } = await axios.get("https://attendance-tracker-backend-5lm1.onrender.com/api/routine", {
+      const { data } = await axios.get(`${URL}/api/routine`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       console.log("Routine = ", data);
@@ -97,7 +99,7 @@ export const AttendanceProvider = ({ children }) => {
   const fetchTodaySubjects = async () => {
     try {
       const response = await axios.get(
-        "https://attendance-tracker-backend-5lm1.onrender.com/api/today-subjects",
+        `${URL}/api/today-subjects`,
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token
         }
@@ -115,7 +117,7 @@ export const AttendanceProvider = ({ children }) => {
   const markAttendance = async (subjectname, status) => {
     try {
       await axios.post(
-        "https://attendance-tracker-backend-5lm1.onrender.com/api/attendance",
+        `${URL}/api/attendance`,
         {
           subjectname,
           status,
@@ -144,7 +146,7 @@ export const AttendanceProvider = ({ children }) => {
 
   const countAttendance = async () => {
     try {
-      const res = await axios.get("https://attendance-tracker-backend-5lm1.onrender.com/api/attendance", {
+      const res = await axios.get(`${URL}/api/attendance`, {
         headers: { Authorization: `Bearer ${token}` }, // Send the token
       });
       // console.log("data == ", res.data);
