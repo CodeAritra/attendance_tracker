@@ -13,11 +13,11 @@ export default function Dashboard() {
     fetchTodaySubjects();
   }, []);
 
-
   return (
     <Navigation>
       {loading ? (
         <>
+          {console.log("loading")}
           <Loader />
         </>
       ) : (

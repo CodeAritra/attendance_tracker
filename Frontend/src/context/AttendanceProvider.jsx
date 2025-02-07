@@ -116,9 +116,15 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const markAttendance = async (subjectname, status) => {
-    
-
+    // ✅ Immediately update UI for a fast response
+    setTodaySubjects((prev) =>
+      prev.map((subject) =>
+        subject.name === subjectname ? { ...subject, attendance: status } : subject
+      )
+    );
+  
     try {
+      // ✅ Send API request in the background
       await axios.post(
         `${URL}/api/attendance/mark`,
         {
@@ -127,26 +133,22 @@ export const AttendanceProvider = ({ children }) => {
           date: format(new Date(), "dd/MM/yyyy"),
         },
         {
-          headers: { Authorization: `Bearer ${token}` }, // Send the token
+          headers: { Authorization: `Bearer ${token}` },
         }
-      );
-
-      // console.log("Attendance updated:", data);
-
-      // Update the state correctly
-      setTodaySubjects((prev) =>
-        prev.map((subject) =>
-          subject.name === subjectname
-            ? { ...subject, attendance: status }
-            : subject
-        )
       );
     } catch (error) {
       console.error("Error marking attendance:", error);
       setError("Failed to mark attendance. Please try again.");
+  
+      // ❌ Revert UI update if API fails
+      setTodaySubjects((prev) =>
+        prev.map((subject) =>
+          subject.name === subjectname ? { ...subject, attendance: null } : subject
+        )
+      );
     }
-    
   };
+  
 
   const countAttendance = async () => {
     setLoading(true);
