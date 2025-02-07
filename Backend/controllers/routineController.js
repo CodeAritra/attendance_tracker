@@ -96,6 +96,17 @@ export const getRoutine = async (req, res) => {
     // if (!routine || routine.length === 0) {
     //   return res.status(404).json({ message: "No routine found" });
     // }
+    // ✅ Sorting routine by day order before sending to frontend
+    const dayOrder = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    routine.sort((a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day));
 
     res.json(routine);
   } catch (error) {

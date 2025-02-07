@@ -7,7 +7,6 @@ import axios from "axios";
 import { format } from "date-fns";
 import { URL } from "../url/url";
 
-
 export const AttendanceProvider = ({ children }) => {
   const [routine, setRoutine] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -82,6 +81,8 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const fetchRoutine = async () => {
+    setLoading(true);
+
     try {
       const { data } = await axios.get(`${URL}/api/routine/get`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -94,17 +95,16 @@ export const AttendanceProvider = ({ children }) => {
       console.error("Error fetching routine:", error);
       setError("Failed to load routine. Please refresh.");
     }
+    setLoading(false);
   };
 
   const fetchTodaySubjects = async () => {
-    try {      
-      const response = await axios.get(
-        `${URL}/api/routine/today-subjects`,
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Send the token
-        }
-      );
-      // console.log("data == ", response.data);
+    setLoading(true);
+    try {
+      const response = await axios.get(`${URL}/api/routine/today-subjects`, {
+        headers: { Authorization: `Bearer ${token}` }, // Send the token
+      });
+      //  console.log("data == ", response);
 
       setTodaySubjects(response.data);
       setError("");
@@ -112,9 +112,12 @@ export const AttendanceProvider = ({ children }) => {
       console.error("Error fetching today's subjects:", error);
       setError("Failed to fetch today's subjects. Please refresh the page.");
     }
+    setLoading(false);
   };
 
   const markAttendance = async (subjectname, status) => {
+    setLoading(true);
+
     try {
       await axios.post(
         `${URL}/api/attendance/mark`,
@@ -142,9 +145,12 @@ export const AttendanceProvider = ({ children }) => {
       console.error("Error marking attendance:", error);
       setError("Failed to mark attendance. Please try again.");
     }
+    setLoading(false);
   };
 
   const countAttendance = async () => {
+    setLoading(true);
+
     try {
       const res = await axios.get(`${URL}/api/attendance/get`, {
         headers: { Authorization: `Bearer ${token}` }, // Send the token
@@ -154,6 +160,7 @@ export const AttendanceProvider = ({ children }) => {
     } catch (error) {
       console.log("error : ", error);
     }
+    setLoading(false);
   };
 
   return (
