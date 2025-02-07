@@ -116,7 +116,7 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const markAttendance = async (subjectname, status) => {
-    setLoading(true);
+    
 
     try {
       await axios.post(
@@ -145,7 +145,7 @@ export const AttendanceProvider = ({ children }) => {
       console.error("Error marking attendance:", error);
       setError("Failed to mark attendance. Please try again.");
     }
-    setLoading(false);
+    
   };
 
   const countAttendance = async () => {
