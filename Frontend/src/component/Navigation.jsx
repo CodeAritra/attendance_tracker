@@ -33,7 +33,7 @@ export default function Nvaigation({ children }) {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-white shadow-md p-4 flex justify-between items-center fixed w-full top-0 z-50"
+        className="bg-white shadow-md p-4 flex justify-between items-center fixed w-full top-0 z-100"
       >
         <h1 className="text-xl font-bold text-gray-800 flex items-center">
           Attendance Tracker

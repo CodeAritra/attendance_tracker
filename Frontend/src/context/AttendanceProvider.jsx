@@ -14,6 +14,9 @@ export const AttendanceProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [todaySubjects, setTodaySubjects] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  
+    const [showModal, setShowModal] = useState(false);
+    const [subject, setSubject] = useState({ name: "", time: "" });
 
   const token = localStorage.getItem("token");
 
@@ -126,7 +129,6 @@ export const AttendanceProvider = ({ children }) => {
     }
   };
   
-
   const markAttendance = async (subjectname, status) => {
     // ✅ Immediately update UI for a fast response
     setTodaySubjects((prev) =>
@@ -180,6 +182,38 @@ export const AttendanceProvider = ({ children }) => {
     setLoading(false);
   };
 
+  //extra class
+  const handleChange = (field, value) => {
+    setSubject((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const addExtraClass = async () => {
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/routine/extra-class",
+        { name: subject.name, time: subject.time }, // ✅ Request body goes here
+        {
+          headers: { Authorization: `Bearer ${token}` }, // ✅ Headers go here
+        }
+      );
+      console.log("Data = ", data);
+      fetchTodaySubjects();
+    } catch (error) {
+      console.log("Error adding extra class:", error);
+    }
+  };
+
+  const handleAddExtraClass = () => {
+    addExtraClass(subject);
+    console.log("sub == ", subject);
+
+    setSubject([]);
+    setShowModal(false);
+  };
+
   return (
     <AttendanceContext.Provider
       value={{
@@ -201,6 +235,7 @@ export const AttendanceProvider = ({ children }) => {
         setTodaySubjects,
         markAttendance,
         deleteSubject,
+        showModal, setShowModal,subject, setSubject,handleAddExtraClass,addExtraClass,handleChange
       }}
     >
       {children}

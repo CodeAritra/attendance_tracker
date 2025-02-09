@@ -1,6 +1,7 @@
 import Routine from "../models/routineModel.js";
 import Attendance from "../models/attendanceModel.js";
 import { format } from "date-fns";
+import ExtraClass from "../models/extraClassModel.js";
 
 // Add Routine (Auth required)
 // app.post("/api/routine", authenticateToken, async (req, res) => {
@@ -143,6 +144,43 @@ export const deleteSubject = async (req, res) => {
   }
 };
 
+export const extraClass = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const day = format(new Date(), "EEEE");
+    const date = format(new Date(), "yyyy-MM-dd");
+    // console.log(day);
+    // console.log(date);
+
+    const { name, time } = req.body;
+
+    // Check if an entry for today's date exists
+    let existingExtraClass = await ExtraClass.findOne({ userId, date });
+    // console.log(existingExtraClass);
+
+    if (existingExtraClass) {
+      // Update the existing document by pushing the new class
+      existingExtraClass.subjects.push({ name, time });
+      await existingExtraClass.save();
+      res.json({ success: true, existingExtraClass });
+    } else {
+      // Create a new entry if today's date is not found
+      const newExtraClass = new ExtraClass({
+        userId,
+        day,
+        date,
+        subjects: [{ name, time }],
+      });
+      await newExtraClass.save();
+      res.json({ success: true, newExtraClass });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Extra class error", error: error });
+  }
+};
+
 // Get Today's Subjects (Auth required)
 export const getSubject = async (req, res) => {
   try {
@@ -151,13 +189,29 @@ export const getSubject = async (req, res) => {
 
     // Find today's subjects from the Routine collection
     const routine = await Routine.findOne({ userId: req.user.id, day: today });
+    const extraClass = await ExtraClass.findOne({
+      userId: req.user.id,
+      day: today,
+    });
 
     if (!routine || routine.subjects.length === 0) {
       return res.json([]); // No subjects for today
     }
 
+    const todaySubjects = {
+      userId: routine.userId,
+      day: routine.day,
+      subjects: [...routine.subjects, ...extraClass.subjects],
+    };
+
+    /*res.json({
+      routine: routine,
+      extra: extraClass,
+      todaySubjects: todaySubjects,
+    });*/
+
     // Extract subject names from the routine
-    const subjectNames = routine.subjects.map((subject) => subject.name);
+    const subjectNames = todaySubjects.subjects.map((subject) => subject.name);
 
     // Get today's attendance records based on subjectName
     const attendanceRecords = await Attendance.find({
@@ -167,7 +221,7 @@ export const getSubject = async (req, res) => {
     });
 
     // Map subjects with attendance data
-    const subjectsWithAttendance = routine.subjects.map((subject) => {
+    const subjectsWithAttendance = todaySubjects.subjects.map((subject) => {
       const attendance = attendanceRecords.find(
         (record) => record.subjectname === subject.name
       );
