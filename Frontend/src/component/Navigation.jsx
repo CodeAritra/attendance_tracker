@@ -106,7 +106,7 @@ export default function Nvaigation({ children }) {
       </motion.nav>
 
       {/* Main Content */}
-      <div className="flex-1 mt-12 mb-10">{children}</div>
+      <div className="flex-1 mt-12 pb-20 ">{children}</div>
 
       {/* Bottom Navigation (Mobile Only) */}
       <motion.div

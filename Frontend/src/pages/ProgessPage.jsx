@@ -22,7 +22,7 @@ export default function ProgressPage() {
         ) : (
           <>
             <div className="bg-gray-50  max-h-screen">
-              <div className="max-w-4xl mx-auto p-6">
+              <div className="max-w-4xl mx-auto pb-15 ">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
