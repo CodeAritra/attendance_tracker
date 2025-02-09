@@ -115,6 +115,34 @@ export const getRoutine = async (req, res) => {
   }
 };
 
+export const deleteSubject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { day, subjectName } = req.body;
+
+    // Find the routine for the given user and day
+    const routine = await Routine.findOne({ userId, day });
+
+    if (!routine) {
+      return res
+        .status(404)
+        .json({ message: "Routine not found for this day" });
+    }
+
+    // Filter out the subject to delete
+    routine.subjects = routine.subjects.filter(
+      (subject) => subject.name !== subjectName
+    );
+
+    // Save the updated routine
+    await routine.save();
+
+    res.status(200).json({ message: "Subject deleted successfully", routine });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Get Today's Subjects (Auth required)
 export const getSubject = async (req, res) => {
   try {

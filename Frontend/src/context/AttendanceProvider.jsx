@@ -115,14 +115,28 @@ export const AttendanceProvider = ({ children }) => {
     setLoading(false);
   };
 
+  const deleteSubject = async (day, subjectName) => {
+    try {
+      await axios.delete(`${URL}/api/routine/delete`, {
+        headers: { Authorization: `Bearer ${token}` }, // Send the token
+        data: { day, subjectName }, // Axios requires `data` inside DELETE requests
+      });
+    } catch (error) {
+      console.log("Error deleting subject:", error.response?.data || error.message);
+    }
+  };
+  
+
   const markAttendance = async (subjectname, status) => {
     // ✅ Immediately update UI for a fast response
     setTodaySubjects((prev) =>
       prev.map((subject) =>
-        subject.name === subjectname ? { ...subject, attendance: status } : subject
+        subject.name === subjectname
+          ? { ...subject, attendance: status }
+          : subject
       )
     );
-  
+
     try {
       // ✅ Send API request in the background
       await axios.post(
@@ -139,16 +153,17 @@ export const AttendanceProvider = ({ children }) => {
     } catch (error) {
       console.error("Error marking attendance:", error);
       setError("Failed to mark attendance. Please try again.");
-  
+
       // ❌ Revert UI update if API fails
       setTodaySubjects((prev) =>
         prev.map((subject) =>
-          subject.name === subjectname ? { ...subject, attendance: null } : subject
+          subject.name === subjectname
+            ? { ...subject, attendance: null }
+            : subject
         )
       );
     }
   };
-  
 
   const countAttendance = async () => {
     setLoading(true);
@@ -185,6 +200,7 @@ export const AttendanceProvider = ({ children }) => {
         todaySubjects,
         setTodaySubjects,
         markAttendance,
+        deleteSubject,
       }}
     >
       {children}
