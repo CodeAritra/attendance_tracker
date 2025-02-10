@@ -199,9 +199,9 @@ export const getSubject = async (req, res) => {
     }
 
     const todaySubjects = {
-      userId: routine.userId,
-      day: routine.day,
-      subjects: [...routine.subjects, ...extraClass.subjects],
+      userId: routine?.userId || '',
+      day: routine?.day || '',
+      subjects: [...(routine?.subjects || []), ...(extraClass?.subjects || [])],
     };
 
     /*res.json({
