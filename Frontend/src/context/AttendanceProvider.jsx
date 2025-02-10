@@ -193,7 +193,7 @@ export const AttendanceProvider = ({ children }) => {
   const addExtraClass = async () => {
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/routine/extra-class",
+        `${URL}/api/routine/extra-class`,
         { name: subject.name, time: subject.time }, // ✅ Request body goes here
         {
           headers: { Authorization: `Bearer ${token}` }, // ✅ Headers go here

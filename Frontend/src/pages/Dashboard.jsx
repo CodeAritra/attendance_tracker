@@ -175,6 +175,7 @@ export default function Dashboard() {
                 Cancel
               </button>
               <button
+                disabled={loading}
                 onClick={handleAddExtraClass}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
               >
