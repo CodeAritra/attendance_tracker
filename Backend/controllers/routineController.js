@@ -149,37 +149,20 @@ export const extraClass = async (req, res) => {
     const userId = req.user.id;
     const day = format(new Date(), "EEEE");
     const date = format(new Date(), "yyyy-MM-dd");
-    // console.log(day);
-    // console.log(date);
-
     const { name, time } = req.body;
 
-    // Check if an entry for today's date exists
-    let existingExtraClass = await ExtraClass.findOne({ userId, date });
-    // console.log(existingExtraClass);
+    const updatedExtraClass = await ExtraClass.findOneAndUpdate(
+      { userId, date }, // Ensure uniqueness per user
+      { $push: { subjects: { name, time } }, $set: { day } },
+      { new: true, upsert: true } // Prevent duplicate inserts
+    );
 
-    if (existingExtraClass) {
-      // Update the existing document by pushing the new class
-      existingExtraClass.subjects.push({ name, time });
-      await existingExtraClass.save();
-      res.json({ success: true, existingExtraClass });
-    } else {
-      // Create a new entry if today's date is not found
-      const newExtraClass = new ExtraClass({
-        userId,
-        day,
-        date,
-        subjects: [{ name, time }],
-      });
-      await newExtraClass.save();
-      res.json({ success: true, newExtraClass });
-    }
+    res.json({ success: true, updatedExtraClass });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Extra class error", error: error });
+    res.status(500).json({ success: false, message: "Extra class error", error });
   }
 };
+
 
 // Get Today's Subjects (Auth required)
 export const getSubject = async (req, res) => {
