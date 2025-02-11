@@ -1,39 +1,64 @@
-import Routine from "../models/routineModel.js"
-import Attendance from "../models/attendanceModel.js"
+import Routine from "../models/routineModel.js";
+import Attendance from "../models/attendanceModel.js";
+import ExtraClass from "../models/extraClassModel.js";
 
 // Mark Attendance (Auth required)
 export const markAttendance = async (req, res) => {
   try {
-    let { subjectname, status, date } = req.body;
+    let { subjectId, status, date } = req.body;
 
-    if (!subjectname) {
-      return res.status(400).json({ error: "Error in marking attendance" });
+    if (!subjectId) {
+      return res.status(400).json({ error: "Subject ID is required" });
     }
 
-    // Check if subject exists in the user's routine
-    const routine = await Routine.findOne({
-      userId: req.user.id,
-      "subjects.name": subjectname,
-    });
+    // Search for subject in Routine collection
+    let routine = await Routine.findOne(
+      { userId: req.user.id, "subjects._id": subjectId },
+      { "subjects.$": 1 } // Get only the matching subject
+    );
 
+    // If not found in Routine, search in ExtraClass collection
     if (!routine) {
-      return res
-        .status(404)
-        .json({ error: "Subject not found in your routine." });
+      routine = await ExtraClass.findOne(
+        { userId: req.user.id, "subjects._id": subjectId },
+        { "subjects.$": 1 }
+      );
     }
 
-    // Mark attendance
+    // If subject is not found in either, return error
+    if (!routine || routine.subjects.length === 0) {
+      return res.status(404).json({ error: "Subject not found in your routine or extra classes." });
+    }
+
+    // Extract the exact subject that matches the subjectId
+    const subject = routine.subjects.find((sub) => sub._id.toString() === subjectId);
+
+    if (!subject) {
+      return res.status(404).json({ error: "Subject not found." });
+    }
+
+    // Mark attendance using subjectId
     const attendance = await Attendance.findOneAndUpdate(
-      { userId: req.user.id, subjectname, date },
-      { $set: { status } }, // Only update status
+      { userId: req.user.id, subjectId, date }, // Use subjectId for marking attendance
+      { $set: { status, subjectname: subject.name } }, // Store only the matched subject name
       { upsert: true, new: true }
     );
 
-    res.json({ message: "Attendance recorded successfully!", attendance });
+    res.json({
+      message: "Attendance recorded successfully!",
+      attendance: {
+        subjectId,
+        subjectname: subject.name, // Return only the matched subject name
+        status,
+        date,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+
 
 //get attendance of each subject
 export const getAttendance = async (req, res) => {

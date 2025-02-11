@@ -163,7 +163,6 @@ export const extraClass = async (req, res) => {
   }
 };
 
-
 // Get Today's Subjects (Auth required)
 export const getSubject = async (req, res) => {
   try {
@@ -181,35 +180,31 @@ export const getSubject = async (req, res) => {
       return res.json([]); // No subjects for today
     }
 
+    // Combine regular and extra class subjects
     const todaySubjects = {
-      userId: routine?.userId || '',
-      day: routine?.day || '',
+      userId: routine?.userId || "",
+      day: routine?.day || "",
       subjects: [...(routine?.subjects || []), ...(extraClass?.subjects || [])],
     };
 
-    /*res.json({
-      routine: routine,
-      extra: extraClass,
-      todaySubjects: todaySubjects,
-    });*/
+    // Extract subject IDs
+    const subjectIds = todaySubjects.subjects.map((subject) => subject._id);
 
-    // Extract subject names from the routine
-    const subjectNames = todaySubjects.subjects.map((subject) => subject.name);
-
-    // Get today's attendance records based on subjectName
+    // Get today's attendance records based on subjectId
     const attendanceRecords = await Attendance.find({
       userId: req.user.id,
       date: format(new Date(), "dd/MM/yyyy"),
-      subjectname: { $in: subjectNames }, // Match subjects by name
+      subjectId: { $in: subjectIds }, // Match attendance by subjectId
     });
 
     // Map subjects with attendance data
     const subjectsWithAttendance = todaySubjects.subjects.map((subject) => {
       const attendance = attendanceRecords.find(
-        (record) => record.subjectname === subject.name
+        (record) => record.subjectId.toString() === subject._id.toString() // Ensure proper ID comparison
       );
 
       return {
+        subjectId: subject._id,
         name: subject.name,
         time: subject.time,
         attendance: attendance ? attendance.status : null,
@@ -221,6 +216,7 @@ export const getSubject = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Multer configuration to handle image uploads
 // const storage = multer.diskStorage({

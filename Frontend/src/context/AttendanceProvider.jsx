@@ -129,11 +129,11 @@ export const AttendanceProvider = ({ children }) => {
     }
   };
   
-  const markAttendance = async (subjectname, status) => {
+  const markAttendance = async (subjectId, status) => {
     // ✅ Immediately update UI for a fast response
     setTodaySubjects((prev) =>
       prev.map((subject) =>
-        subject.name === subjectname
+        subject.subjectId=== subjectId
           ? { ...subject, attendance: status }
           : subject
       )
@@ -144,7 +144,7 @@ export const AttendanceProvider = ({ children }) => {
       await axios.post(
         `${URL}/api/attendance/mark`,
         {
-          subjectname,
+          subjectId,
           status,
           date: format(new Date(), "dd/MM/yyyy"),
         },
@@ -159,7 +159,7 @@ export const AttendanceProvider = ({ children }) => {
       // ❌ Revert UI update if API fails
       setTodaySubjects((prev) =>
         prev.map((subject) =>
-          subject.name === subjectname
+          subject.subjectId === subjectId
             ? { ...subject, attendance: null }
             : subject
         )

@@ -82,7 +82,7 @@ export default function Dashboard() {
                 >
                   {todaySubjects.map((subject) => (
                     <motion.div
-                      key={subject.name}
+                      key={subject._id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
@@ -99,7 +99,7 @@ export default function Dashboard() {
                       </div>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => markAttendance(subject.name, true)}
+                          onClick={() => markAttendance(subject.subjectId, true)}
                           className={`p-2 rounded-full transition duration-200 ${
                             subject.attendance === true
                               ? "bg-green-100 text-green-600"
@@ -110,7 +110,7 @@ export default function Dashboard() {
                           <CheckCircle className="w-6 h-6" />
                         </button>
                         <button
-                          onClick={() => markAttendance(subject.name, false)}
+                          onClick={() => markAttendance(subject.subjectId, false)}
                           className={`p-2 rounded-full transition duration-200 ${
                             subject.attendance === false
                               ? "bg-red-100 text-red-600"
