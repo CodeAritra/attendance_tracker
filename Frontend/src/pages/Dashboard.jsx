@@ -34,29 +34,29 @@ export default function Dashboard() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="bg-gray-50 max-h-screen flex justify-center overflow-hidden">
-          <div className="max-w-4xl w-full mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-              {/* Header with Add Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="flex justify-between items-center mb-4"
+        <div className="max-w-4xl w-full mx-auto ">
+          <div className="bg-white rounded-lg shadow-lg p-6 overflow-y-auto ">
+            {/* Header with Add Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="flex justify-between items-center mb-4"
+            >
+              <h2 className="text-xl font-semibold flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-indigo-600" />
+                Classes for today
+              </h2>
+              <button
+                onClick={() => setShowModal(true)}
+                title="Add Extra Class"
               >
-                <h2 className="text-xl font-semibold flex items-center">
-                  <Calendar className="w-5 h-5 mr-2 text-indigo-600" />
-                  Classes for today
-                </h2>
-                <button
-                  onClick={() => setShowModal(true)}
-                  title="Add Extra Class"
-                >
-                  <PlusCircle className="w-6 h-6 text-indigo-600 hover:text-indigo-800 transition" />
-                </button>
-              </motion.div>
+                <PlusCircle className="w-6 h-6 text-indigo-600 hover:text-indigo-800 transition" />
+              </button>
+            </motion.div>
 
-              {/* Display Routine */}
+            {/* Display Routine */}
+            <div className="">
               {todaySubjects.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -99,7 +99,9 @@ export default function Dashboard() {
                       </div>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => markAttendance(subject.subjectId, true)}
+                          onClick={() =>
+                            markAttendance(subject.subjectId, true)
+                          }
                           className={`p-2 rounded-full transition duration-200 ${
                             subject.attendance === true
                               ? "bg-green-100 text-green-600"
@@ -110,7 +112,9 @@ export default function Dashboard() {
                           <CheckCircle className="w-6 h-6" />
                         </button>
                         <button
-                          onClick={() => markAttendance(subject.subjectId, false)}
+                          onClick={() =>
+                            markAttendance(subject.subjectId, false)
+                          }
                           className={`p-2 rounded-full transition duration-200 ${
                             subject.attendance === false
                               ? "bg-red-100 text-red-600"

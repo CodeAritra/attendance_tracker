@@ -27,7 +27,7 @@ export default function Nvaigation({ children }) {
   };
 
   return (
-    <div className="max-h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Navbar */}
       <motion.nav
         initial={{ y: -50, opacity: 0 }}
@@ -106,7 +106,7 @@ export default function Nvaigation({ children }) {
       </motion.nav>
 
       {/* Main Content */}
-      <div className="flex-1 mt-12 pb-20 ">{children}</div>
+      <div className="flex-1 overflow-y-auto mt-16 pb-20 ">{children}</div>
 
       {/* Bottom Navigation (Mobile Only) */}
       <motion.div
