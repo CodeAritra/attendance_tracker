@@ -94,10 +94,6 @@ export const getRoutine = async (req, res) => {
   try {
     const routine = await Routine.find({ userId: req.user.id });
 
-    // if (!routine || routine.length === 0) {
-    //   return res.status(404).json({ message: "No routine found" });
-    // }
-    // ✅ Sorting routine by day order before sending to frontend
     const dayOrder = [
       "Monday",
       "Tuesday",
@@ -107,7 +103,21 @@ export const getRoutine = async (req, res) => {
       "Saturday",
       "Sunday",
     ];
+
+    // Sort routines by day
     routine.sort((a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day));
+
+    // Sort subjects within each day's routine based on start time
+    routine.forEach((entry) => {
+      entry.subjects.sort((a, b) => {
+        const getTimeInMinutes = (timeRange) => {
+          const startTime = timeRange.split("-")[0]; // Extract start time
+          const [hours, minutes] = startTime.split(":").map(Number);
+          return hours * 60 + minutes; // Convert to minutes for easy comparison
+        };
+        return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
+      });
+    });
 
     res.json(routine);
   } catch (error) {
@@ -115,6 +125,7 @@ export const getRoutine = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const deleteSubject = async (req, res) => {
   try {
@@ -153,7 +164,7 @@ export const extraClass = async (req, res) => {
 
     const updatedExtraClass = await ExtraClass.findOneAndUpdate(
       { userId, date }, // Ensure uniqueness per user
-      { $push: { subjects: { name, time } }, $set: { day } },
+      { $push: { subjects: { name, time } }, $set: { date } },
       { new: true, upsert: true } // Prevent duplicate inserts
     );
 
@@ -168,12 +179,13 @@ export const getSubject = async (req, res) => {
   try {
     // Get today's day name (e.g., "Monday")
     const today = format(new Date(), "EEEE");
+    const date = format(new Date(), "yyyy-MM-dd");
 
     // Find today's subjects from the Routine collection
     const routine = await Routine.findOne({ userId: req.user.id, day: today });
     const extraClass = await ExtraClass.findOne({
       userId: req.user.id,
-      day: today,
+      date
     });
 
     if (!routine || routine.subjects.length === 0) {
