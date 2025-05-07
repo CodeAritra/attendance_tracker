@@ -8,12 +8,14 @@ import {
   LogOut,
   LogIn,
 } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import AttendanceContext from "../context/AttendanceProvider";
 
 export default function Nvaigation({ children }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { ResetData } = useContext(AttendanceContext);
 
   const navigate = useNavigate();
 
@@ -24,6 +26,11 @@ export default function Nvaigation({ children }) {
 
     localStorage.removeItem("token");
     navigate("/auth");
+  };
+
+  const handleReset = async () => {
+    await ResetData();
+    navigate("/");
   };
 
   return (
@@ -83,6 +90,12 @@ export default function Nvaigation({ children }) {
                   >
                     Upload Routine
                   </Link>
+                  <Link
+                    onClick={handleReset}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                  >
+                    Reset
+                  </Link>
                   {token ? (
                     <button
                       onClick={handlelogout}
@@ -109,78 +122,86 @@ export default function Nvaigation({ children }) {
       <div className="flex-1 overflow-y-auto mt-16 pb-20 ">{children}</div>
 
       {/* Bottom Navigation (Mobile Only) */}
-      <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="fixed bottom-0 left-0 right-0 bg-white shadow-t-md p-4 flex justify-around sm:hidden z-50"
-      >
-        <Link
-          to="/"
-          className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
+      <div className="block md:hidden">
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="fixed bottom-0 left-0 right-0 bg-white shadow-t-md p-4 flex justify-around md:hidden z-50"
         >
-          <Home className="w-6 h-6" />
-          <span className="text-xs">Home</span>
-        </Link>
-        <Link
-          to="/routine"
-          className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
-        >
-          <BookOpen className="w-6 h-6" />
-          <span className="text-xs">Routine</span>
-        </Link>
-        <Link
-          to="/attendance"
-          className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
-        >
-          <BarChart className="w-6 h-6" />
-          <span className="text-xs">Attendance</span>
-        </Link>
-        <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex flex-col items-center text-gray-600 hover:text-indigo-600 focus:outline-none"
+          <Link
+            to="/"
+            className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
           >
-            <User className="w-6 h-6 mr-3" />
-            <span className="text-xs flex items-center">
-              Profile <ChevronDown className="w-3 h-3 ml-1" />
-            </span>
-          </button>
-          <AnimatePresence>
-            {isDropdownOpen && (
-              <motion.div
-                initial={{ y: -10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -10, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="absolute right-1 bottom-10 bg-gray-100 shadow-md rounded-md p-2 w-40 text-sm"
-              >
-                <Link
-                  to="/upload"
-                  className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
+            <Home className="w-6 h-6" />
+            <span className="text-xs">Home</span>
+          </Link>
+          <Link
+            to="/routine"
+            className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
+          >
+            <BookOpen className="w-6 h-6" />
+            <span className="text-xs">Routine</span>
+          </Link>
+          <Link
+            to="/attendance"
+            className="flex flex-col items-center text-gray-600 hover:text-indigo-600"
+          >
+            <BarChart className="w-6 h-6" />
+            <span className="text-xs">Attendance</span>
+          </Link>
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex flex-col items-center text-gray-600 hover:text-indigo-600 focus:outline-none"
+            >
+              <User className="w-6 h-6 mr-3" />
+              <span className="text-xs flex items-center">
+                Profile <ChevronDown className="w-3 h-3 ml-1" />
+              </span>
+            </button>
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ y: -10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -10, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute right-1 bottom-10 bg-gray-100 shadow-md rounded-md p-2 w-40 text-sm"
                 >
-                  Upload Routine
-                </Link>
-                {token ? (
-                  <button
-                    onClick={handlelogout}
-                    className="flex items-center px-4 py-2 text-red-600 hover:bg-gray-100 w-full"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" /> Logout
-                  </button>
-                ) : (
                   <Link
-                    to="/auth"
-                    className="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100"
+                    to="/upload"
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
                   >
-                    <LogIn className="w-4 h-4 mr-2" /> Login
+                    Upload Routine
                   </Link>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+                  <Link
+                    onClick={handleReset}
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
+                  >
+                    Reset
+                  </Link>
+                  {token ? (
+                    <button
+                      onClick={handlelogout}
+                      className="flex items-center px-4 py-2 text-red-600 hover:bg-gray-100 w-full"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" /> Logout
+                    </button>
+                  ) : (
+                    <Link
+                      to="/auth"
+                      className="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100"
+                    >
+                      <LogIn className="w-4 h-4 mr-2" /> Login
+                    </Link>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

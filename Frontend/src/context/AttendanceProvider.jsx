@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-
 import { useState } from "react";
 import Tesseract from "tesseract.js";
 import AttendanceContext from "./AttendanceContext.js";
@@ -14,9 +13,9 @@ export const AttendanceProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [todaySubjects, setTodaySubjects] = useState([]);
   const [subjects, setSubjects] = useState([]);
-  
-    const [showModal, setShowModal] = useState(false);
-    const [subject, setSubject] = useState({ name: "", time: "" });
+
+  const [showModal, setShowModal] = useState(false);
+  const [subject, setSubject] = useState({ name: "", time: "" });
 
   const token = localStorage.getItem("token");
 
@@ -125,15 +124,18 @@ export const AttendanceProvider = ({ children }) => {
         data: { day, subjectName }, // Axios requires `data` inside DELETE requests
       });
     } catch (error) {
-      console.log("Error deleting subject:", error.response?.data || error.message);
+      console.log(
+        "Error deleting subject:",
+        error.response?.data || error.message
+      );
     }
   };
-  
+
   const markAttendance = async (subjectId, status) => {
     // ✅ Immediately update UI for a fast response
     setTodaySubjects((prev) =>
       prev.map((subject) =>
-        subject.subjectId=== subjectId
+        subject.subjectId === subjectId
           ? { ...subject, attendance: status }
           : subject
       )
@@ -214,6 +216,20 @@ export const AttendanceProvider = ({ children }) => {
     setShowModal(false);
   };
 
+  //reset
+  const ResetData = async () => {
+    try {
+      const { data } = await axios.delete(`${URL}/api/auth/clear-all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        console.log("clear = ", data,"reset = ");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <AttendanceContext.Provider
       value={{
@@ -235,7 +251,14 @@ export const AttendanceProvider = ({ children }) => {
         setTodaySubjects,
         markAttendance,
         deleteSubject,
-        showModal, setShowModal,subject, setSubject,handleAddExtraClass,addExtraClass,handleChange
+        showModal,
+        setShowModal,
+        subject,
+        setSubject,
+        handleAddExtraClass,
+        addExtraClass,
+        handleChange,
+        ResetData
       }}
     >
       {children}

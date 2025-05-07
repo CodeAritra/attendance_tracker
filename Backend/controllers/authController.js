@@ -1,9 +1,12 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import attendance from "../models/attendanceModel.js";
+import routine from "../models/routineModel.js";
+import extraClass from "../models/extraClassModel.js";
 
 // User Registration
-export const signUp =async (req, res) => {
+export const signUp = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -14,10 +17,7 @@ export const signUp =async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashedPassword });
 
-    const token = jwt.sign(
-      { id: newUser._id },
-      process.env.JWT_SECRET 
-    );
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
 
     await newUser.save();
     res.json({
@@ -48,10 +48,7 @@ export const login = async (req, res) => {
         .status(400)
         .json({ success: false, error: "Invalid email or password" });
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET 
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
     res.json({
       success: true,
@@ -60,8 +57,19 @@ export const login = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
-
+//reset all data
+export const clearALL = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await attendance.deleteMany({userId})
+    await routine.deleteMany({userId})
+    await extraClass.deleteMany({userId})
+    res.status(200).send({ success: true, message: "All cleared", userId });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error });
+  }
+};
