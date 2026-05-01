@@ -2,7 +2,7 @@
 
 A full-stack web application to help students **upload class routines**, **mark daily attendance**, and **track attendance percentage** — all in one clean and user-friendly dashboard. Built using the **MERN stack**.
 
-🔗 **Live Demo**: [Click Here to View the App](https://attendance-tracker-c86g.onrender.com/)
+🔗 **Live Demo**: [Click Here to View the App](https://attendance-tracker-five-rose.vercel.app/)
 
 ---
 
